@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="javaDbAlbum:war">
+    <output-path>$PROJECT_DIR$/assignment2/javaDbAlbum/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>javaDbAlbum</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="javaAlbum.war">
+      <element id="artifact" artifact-name="javaDbAlbum:war exploded" />
+    </root>
+  </artifact>
+</component>

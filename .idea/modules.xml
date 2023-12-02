@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/CS6650.iml" filepath="$PROJECT_DIR$/.idea/CS6650.iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment1/client/client.iml" filepath="$PROJECT_DIR$/assignment1/client/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment2/client/client (1).iml" filepath="$PROJECT_DIR$/assignment2/client/client (1).iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment3/client/client (2).iml" filepath="$PROJECT_DIR$/assignment3/client/client (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment2/javaDbAlbum/javaDbAlbum.iml" filepath="$PROJECT_DIR$/assignment2/javaDbAlbum/javaDbAlbum.iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment3/javaDbAlbum/javaDbAlbum (1).iml" filepath="$PROJECT_DIR$/assignment3/javaDbAlbum/javaDbAlbum (1).iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment1/javaServer/javaServer.iml" filepath="$PROJECT_DIR$/assignment1/javaServer/javaServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment3/rabbitProject/rabbitProject.iml" filepath="$PROJECT_DIR$/assignment3/rabbitProject/rabbitProject.iml" />
+    </modules>
+  </component>
+</project>

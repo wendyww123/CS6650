@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/assignment1/javaServer" />
+    <file type="web" url="file://$PROJECT_DIR$/assignment2/javaDbAlbum" />
+    <file type="web" url="file://$PROJECT_DIR$/assignment3/javaDbAlbum" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/assignment1/client/pom.xml" />
+        <option value="$PROJECT_DIR$/assignment1/javaServer/pom.xml" />
+        <option value="$PROJECT_DIR$/assignment2/client/pom.xml" />
+        <option value="$PROJECT_DIR$/assignment2/javaDbAlbum/pom.xml" />
+        <option value="$PROJECT_DIR$/assignment3/client/pom.xml" />
+        <option value="$PROJECT_DIR$/assignment3/javaDbAlbum/pom.xml" />
+        <option value="$PROJECT_DIR$/assignment3/rabbitProject/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_18" default="true" project-jdk-name="18" project-jdk-type="JavaSDK" />
+</project>

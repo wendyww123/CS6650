@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="javaServer" />
+        <module name="javaDbAlbum" />
+        <module name="javaDbAlbum (1)" />
+        <module name="client (1)" />
+        <module name="client (2)" />
+        <module name="client" />
+        <module name="rabbitProject" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="client" target="11" />
+      <module name="client (1)" target="11" />
+      <module name="client (2)" target="11" />
+      <module name="javaDbAlbum" target="11" />
+      <module name="javaDbAlbum (1)" target="11" />
+      <module name="javaServer" target="11" />
+      <module name="rabbitProject" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
