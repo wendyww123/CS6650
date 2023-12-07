@@ -40,7 +40,7 @@ public class ThreadWork {
 
     public static final long startTime = System.currentTimeMillis();
 
-
+    private OkHttpClient client;
 
     public ThreadWork(String ipAddr, int threadGroupSize, int numThreadGroups, long delay, boolean p99) {
         this.ipAddr = ipAddr;
@@ -49,7 +49,8 @@ public class ThreadWork {
         this.delay = delay;
         this.p99 = p99;
         latch = new CountDownLatch(10 + threadGroupSize * numThreadGroups);
-        total = threadGroupSize * numThreadGroups * 1000 * 2 + 10 * 10 * 2;
+        total = threadGroupSize * numThreadGroups * 100 * 4 + 10 * 10 * 4;
+        this.client = new OkHttpClient();
     }
 
     public void run() throws Exception {
@@ -63,26 +64,23 @@ public class ThreadWork {
         }
         os.close();
         ins.close();
-
+        long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(threadGroupSize * numThreadGroups);
         for (int i = 0; i < 10; i++) {
             executorService.execute(() -> {
                 request(10);
             });
         }
-        CountDownLatch latch = new CountDownLatch(threadGroupSize * numThreadGroups);
-        long startTime = System.currentTimeMillis();
         // Execute
         for (int i = 0; i < numThreadGroups; i++) {
             for (int j = 0; j < threadGroupSize; j++) {
-                executorService.execute(() -> request(1000));
+                executorService.execute(() -> request(100));
             }
             Thread.sleep(delay * 1000);
         }
-        long endTime = System.currentTimeMillis();
         latch.await();
         executorService.shutdown();
-
+        long endTime = System.currentTimeMillis();
         double wallTime = (endTime - startTime) * 0.001;
         int success = SUCCESS.get();
         int fail = total - success;
@@ -92,16 +90,15 @@ public class ThreadWork {
         System.out.println("----------------Server Request Result----------------");
         System.out.println("Total Requests: " + total + " requests");
         System.out.println("Successful: " + success + " ," + "Failed: " + fail);
-        String server = ipAddr.contains("8080") ? "Java" : "Go";
-        System.out.println(server + " Server:\n" + "Thread Group Size: " + threadGroupSize + ",Num Thread Group: " + numThreadGroups + ",Delay: " + delay);
+        System.out.println("Java Server:" + "Thread Group Size: " + threadGroupSize + ",Num Thread Group: " + numThreadGroups + ",Delay: " + delay);
         System.out.println("Wall Time: " + wallTimeStr + " s,Throughput: " +  throughput+ " /sec");
 
         if(p99){
             System.out.println("Post Response Times:");
             PlotUtil.calStats(postLatencies);
 
-            System.out.println("Get Response Times:");
-            PlotUtil.calStats(getLatencies);
+//            System.out.println("Get Response Times:");
+//            PlotUtil.calStats(getLatencies);
 
             PlotUtil.plot(throughputData);
         }
@@ -109,12 +106,13 @@ public class ThreadWork {
 
     public void request(int num){
         for (int i = 0; i < num; i++) {
-            ImageMetaData imageMetaData = null;
+            String albumId = null;
             try {
                 String result = postRequest();
                 System.out.println("POST:" + result);
                 SUCCESS.incrementAndGet();
-                imageMetaData = instance.fromJson(result, ImageMetaData.class);
+                ImageMetaData imageMetaData = instance.fromJson(result, ImageMetaData.class);
+                albumId = imageMetaData.getAlbumId();
                 if(p99){
                     int second = (int) ((System.currentTimeMillis() - startTime) / 1000);
                     throughputData.computeIfAbsent(second, k -> new AtomicInteger()).incrementAndGet();
@@ -122,17 +120,40 @@ public class ThreadWork {
             } catch (Exception ignored) {
 
             }
-            try {
-                String album = imageMetaData != null && imageMetaData.getAlbumId() != null ? imageMetaData.getAlbumId() : "6567087fd9ef051718d7f601";
-                String result = getRequest(album);
-                System.out.println("GET:" + result);
-                SUCCESS.incrementAndGet();
-                if(p99){
-                    int second = (int) ((System.currentTimeMillis() - startTime) / 1000);
-                    throughputData.computeIfAbsent(second, k -> new AtomicInteger()).incrementAndGet();
+            if(albumId != null){
+                try {
+                    String result = mqRequest(albumId, "like");
+                    System.out.println("POST:" + result);
+                    SUCCESS.incrementAndGet();
+                    if(p99){
+                        int second = (int) ((System.currentTimeMillis() - startTime) / 1000);
+                        throughputData.computeIfAbsent(second, k -> new AtomicInteger()).incrementAndGet();
+                    }
+                } catch (Exception ignored) {
+                    ignored.printStackTrace();
                 }
-            } catch (Exception ignored) {
+                try {
+                    String result = mqRequest(albumId, "like");
+                    System.out.println("POST:" + result);
+                    SUCCESS.incrementAndGet();
+                    if(p99){
+                        int second = (int) ((System.currentTimeMillis() - startTime) / 1000);
+                        throughputData.computeIfAbsent(second, k -> new AtomicInteger()).incrementAndGet();
+                    }
+                } catch (Exception ignored) {
 
+                }
+                try {
+                    String result = mqRequest(albumId, "dislike");
+                    System.out.println("POST:" + result);
+                    SUCCESS.incrementAndGet();
+                    if(p99){
+                        int second = (int) ((System.currentTimeMillis() - startTime) / 1000);
+                        throughputData.computeIfAbsent(second, k -> new AtomicInteger()).incrementAndGet();
+                    }
+                } catch (Exception ignored) {
+
+                }
             }
         }
         latch.countDown();
@@ -140,7 +161,7 @@ public class ThreadWork {
 
     public String postRequest() throws Exception {
 //        System.out.println("Post Response");
-        OkHttpClient client = new OkHttpClient();
+//        OkHttpClient client = new OkHttpClient();
         File file = new File("./nmtb.png");
         Map<String, String> jsonMap = new HashMap<>();
         jsonMap.put("artist", "John Doe");
@@ -155,7 +176,35 @@ public class ThreadWork {
                 .build();
 
         Request request = new Request.Builder()
-                .url(ipAddr + "/")
+                .url(ipAddr + "/album/")
+                .post(requestBody)
+                .build();
+        long start = System.currentTimeMillis();
+        try (Response response = client.newCall(request).execute()){
+            long end = System.currentTimeMillis();
+            if(!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response);
+            }
+            if(p99){
+                postLatencies.add(end - start);
+                writeToCSV("POST", end - start, response.code());
+            }
+            return response.body().string();
+        }finally {
+
+        }
+    }
+
+    public String mqRequest(String albumId, String action) throws Exception {
+//        System.out.println("Post Response");
+//        OkHttpClient client = new OkHttpClient();
+        File file = new File("./nmtb.png");
+
+        RequestBody requestBody = RequestBody.create(
+                MediaType.parse("application/json"), "{}");
+
+        Request request = new Request.Builder()
+                .url(ipAddr + "/review/" + albumId + "/" +action)
                 .post(requestBody)
                 .build();
         long start = System.currentTimeMillis();
@@ -176,7 +225,7 @@ public class ThreadWork {
 
     public String getRequest(String albumID) throws Exception {
 //        System.out.println("GET Response");
-        OkHttpClient client = new OkHttpClient();
+//        OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(ipAddr + "/" + albumID)
                 .get()
